@@ -1,7 +1,12 @@
+'use client'
+
 import { ProductWithItems } from '@/typing/interfaces'
+import { filterProducts } from '@/utils/filterProducts'
 import { Category, TextField } from '@prisma/client'
 import cn from 'clsx'
-import * as motion from 'framer-motion/client'
+import { motion } from 'framer-motion'
+import { useSearchParams } from 'next/navigation'
+import { useMemo } from 'react'
 import { ShopHeader } from './shop-header'
 import { ShopPagination } from './shop-pagination'
 import { ShopProduct } from './shop-product'
@@ -12,19 +17,26 @@ interface Props {
 	allCategories: Category[] | undefined
 	allProducts: ProductWithItems[] | undefined
 	texts: TextField[] | undefined
-	totalPages: number
-	searchQuery: string | null
-	currentShowMode: 'grid' | 'list'
 }
 
-export function Shop({
-	allCategories,
-	allProducts,
-	totalPages,
-	searchQuery,
-	currentShowMode,
-	texts
-}: Props) {
+// Клієнтський компонент: дані приходять з сервера один раз,
+// вся фільтрація/сортування/пагінація — через useMemo на клієнті.
+// Це усуває повторні серверні запити при зміні searchParams.
+export default function Shop({ allCategories, allProducts, texts }: Props) {
+	const searchParams = useSearchParams()
+
+	const category = searchParams.get('category') ?? ''
+	const searchQuery = searchParams.get('search') ?? ''
+	const currentShowMode = searchParams.get('showMode') === 'list' ? ('list' as const) : ('grid' as const)
+	const sortingMethodId = Number(searchParams.get('sorting') ?? 1)
+	const page = Number(searchParams.get('page')) || 1
+	const limit = Number(searchParams.get('limit')) || 10
+
+	const { filteredProducts, totalPages } = useMemo(
+		() => filterProducts(allProducts, { category, searchQuery, sortingMethodId, page, limit }),
+		[allProducts, category, searchQuery, sortingMethodId, page, limit]
+	)
+
 	const shopSectionTitle = texts?.find(text => text.slug === 'shop-section-title')?.text
 	const nothingFound = texts?.find(text => text.slug === 'nothing-found')?.text
 
@@ -39,13 +51,13 @@ export function Shop({
 					</div>
 					<main>
 						<ShopSearchView searchQuery={searchQuery} />
-						{allProducts && allProducts.length ? (
+						{filteredProducts && filteredProducts.length ? (
 							<div
 								className={cn('bg-white w-full p-5 gap-5 grid grid-cols-3 max-lg:grid-cols-2', {
 									'min-[500px]:grid-cols-1': currentShowMode === 'list'
 								})}
 							>
-								{allProducts.map((product, index) => (
+								{filteredProducts.map((product, index) => (
 									<motion.article
 										key={product.id}
 										initial={{ opacity: 0 }}

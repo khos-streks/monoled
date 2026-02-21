@@ -1,12 +1,11 @@
 import { categoriesService } from '@/services/categories.service'
 import { productsService } from '@/services/products.service'
 import { textsService } from '@/services/texts.service'
-import { ProductWithItems } from '@/typing/interfaces'
-import { filterProducts } from '@/utils/filterProducts'
-import { Category, TextField } from '@prisma/client'
 import { Metadata } from 'next'
 import { Suspense } from 'react'
-import { Shop } from './_components/shop'
+import dynamic from 'next/dynamic'
+
+const Shop = dynamic(() => import('./_components/shop'))
 
 export const metadata: Metadata = {
 	title: 'Lumineka - Каталог товарів'
@@ -14,53 +13,35 @@ export const metadata: Metadata = {
 
 export const revalidate = 180
 
-async function ShopPage({
-	searchParams
-}: {
-	searchParams: Promise<{
-		category: string | null
-		search: string | null
-		sorting: string | null
-		page: string | null
-		limit: string | null
-		showMode: string | null
-	}>
-}) {
-	const categories: Category[] | undefined = (await categoriesService.getAllCategories())?.data
-	const products: ProductWithItems[] | undefined = (await productsService.getAllProducts())?.data
-	const texts: TextField[] | undefined = await textsService.getAllTexts()
-
-	const searchParameters = await searchParams
-
-	const category = searchParameters.category ?? ''
-	const searchQuery = searchParameters.search ?? ''
-	const showMode =
-		!searchParameters.showMode || searchParameters.showMode !== 'list' ? 'grid' : 'list'
-	const sortingMethodId = Number(searchParameters.sorting ?? 1)
-	const page = Number(searchParameters.page) || 1
-	const limit = Number(searchParameters.limit) || 10
-
-	const { filteredProducts, totalPages } = filterProducts(products, {
-		category,
-		searchQuery,
-		sortingMethodId,
-		page,
-		limit
-	})
+async function ShopPage() {
+	const [categoriesRes, productsRes, texts] = await Promise.all([
+		categoriesService.getAllCategories(),
+		productsService.getAllProducts(),
+		textsService.getAllTexts()
+	])
 
 	return (
 		<section className='min-h-[75vh]'>
-			<Suspense>
+			<Suspense fallback={<ShopSkeleton />}>
 				<Shop
 					texts={texts}
-					currentShowMode={showMode}
-					searchQuery={searchQuery}
-					allCategories={categories}
-					allProducts={filteredProducts}
-					totalPages={totalPages}
+					allCategories={categoriesRes?.data}
+					allProducts={productsRes?.data}
 				/>
 			</Suspense>
 		</section>
+	)
+}
+
+function ShopSkeleton() {
+	return (
+		<div className='container mx-auto max-sm:px-2 mt-10 pb-20 animate-pulse'>
+			<div className='h-10 w-64 bg-neutral-200 rounded mb-6' />
+			<div className='grid grid-cols-[1fr_3fr] max-md:grid-cols-1 gap-5 mt-8'>
+				<div className='bg-neutral-100 h-64 rounded' />
+				<div className='bg-neutral-100 h-96 rounded' />
+			</div>
+		</div>
 	)
 }
 

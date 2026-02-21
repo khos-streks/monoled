@@ -1,7 +1,7 @@
 'use client'
 
 import { useRouter, useSearchParams } from 'next/navigation'
-import { ChangeEvent, useState, useEffect } from 'react'
+import { ChangeEvent, useState, useEffect, useRef } from 'react'
 import useDebounce from '@/hooks/useDebounce'
 
 export default function LimitSelector() {
@@ -12,11 +12,22 @@ export default function LimitSelector() {
 	const [inputValue, setInputValue] = useState(initialLimit)
 	const debouncedLimit = useDebounce(inputValue, 500)
 
+	// Пропускаємо перший рендер, щоб не робити зайвий router.replace при монтуванні.
+	// Залежність — тільки debouncedLimit (а не searchParams), щоб уникнути
+	// нескінченного циклу: searchParams змінюється → effect → replace → searchParams змінюється → ...
+	const isFirstRender = useRef(true)
+
 	useEffect(() => {
-		const params = new URLSearchParams(searchParams.toString())
+		if (isFirstRender.current) {
+			isFirstRender.current = false
+			return
+		}
+
+		const params = new URLSearchParams(window.location.search)
 		params.set('limit', String(debouncedLimit))
 		router.replace(`?${params.toString()}`, { scroll: false })
-	}, [debouncedLimit, router, searchParams])
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [debouncedLimit])
 
 	const handleLimitChange = (e: ChangeEvent<HTMLInputElement>) => {
 		const value = Number(e.target.value)
