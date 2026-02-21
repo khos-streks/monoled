@@ -24,8 +24,6 @@ interface Form {
 	categorySlug: string
 	modelUrl: string
 	isNew?: boolean
-	mainImage: FileList
-	hoverImage: FileList
 	info?: { title: string; value: string; order: number }[]
 }
 
@@ -61,9 +59,7 @@ export function AdminProductCreate({ categories }: Props) {
 	const handleCreate = (data: Form) => {
 		return createFunc({
 			...data,
-			info,
-			mainImage: data.mainImage?.[0],
-			hoverImage: data.hoverImage?.[0]
+			info
 		})
 	}
 
@@ -91,38 +87,6 @@ export function AdminProductCreate({ categories }: Props) {
 
 					<AdminProductCreateModel register={register} />
 					<AdminProductCreateIsNew setValue={setValue} />
-
-					<div className='space-y-2'>
-						<label
-							htmlFor='mainImage'
-							className='block text-sm font-medium'
-						>
-							Головне зображення *
-						</label>
-						<input
-							id='mainImage'
-							type='file'
-							accept='image/*'
-							{...register('mainImage', { required: true })}
-							className='w-full rounded-md border border-gray-500 bg-white px-5 py-3 text-sm'
-						/>
-					</div>
-
-					<div className='space-y-2'>
-						<label
-							htmlFor='hoverImage'
-							className='block text-sm font-medium'
-						>
-							Зображення при наведенні *
-						</label>
-						<input
-							id='hoverImage'
-							type='file'
-							accept='image/*'
-							{...register('hoverImage', { required: true })}
-							className='w-full rounded-md border border-gray-500 bg-white px-5 py-3 text-sm'
-						/>
-					</div>
 
 					<AdminProductCreateDescription
 						watch={watch}

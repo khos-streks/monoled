@@ -12,8 +12,9 @@ interface Props {
 
 export const ShopProduct = dynamic(() =>
 	Promise.resolve(({ product, showMode, index }: Props) => {
-		// Get the default product item (first one) to display
 		const defaultItem = product.items && product.items.length > 0 ? product.items[0] : null
+		const mainImage = defaultItem?.images?.[0] || '/placeholder-image.jpg'
+		const hoverImage = defaultItem?.images?.[1]
 
 		return (
 			<Link
@@ -33,20 +34,19 @@ export const ShopProduct = dynamic(() =>
 						</div>
 					)}
 					<Image
-						src={product.mainImage || '/placeholder-image.jpg'}
+						src={mainImage}
 						alt={product.name}
 						width={360}
 						height={360}
 						priority={index <= 6}
 						loading={index <= 6 ? 'eager' : 'lazy'}
 						className={cn('object-cover rounded-lg h-full w-full', {
-							'group-hover:opacity-0 transition-opacity duration-[400ms] absolute z-10':
-								product.hoverImage
+							'group-hover:opacity-0 transition-opacity duration-[400ms] absolute z-10': hoverImage
 						})}
 					/>
-					{product.hoverImage && (
+					{hoverImage && (
 						<Image
-							src={product.hoverImage}
+							src={hoverImage}
 							alt={product.name}
 							width={360}
 							height={360}

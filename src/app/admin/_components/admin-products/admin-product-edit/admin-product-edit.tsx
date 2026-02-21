@@ -26,8 +26,6 @@ interface Form {
 	categorySlug?: string
 	modelUrl?: string
 	isNew?: boolean
-	mainImage?: FileList
-	hoverImage?: FileList
 	info?: ProductInfo[]
 }
 
@@ -50,9 +48,7 @@ export const AdminProductEdit = dynamic(() =>
 				id: product.id,
 				data: {
 					...data,
-					info,
-					mainImage: data.mainImage?.[0],
-					hoverImage: data.hoverImage?.[0]
+					info
 				}
 			})
 		}
@@ -106,62 +102,12 @@ export const AdminProductEdit = dynamic(() =>
 							register={register}
 						/>
 
+						{/* mainImage та hoverImage видалені — зображення завантажуються лише для варіантів товару (ProductItem) */}
+
 						<AdminProductEditIsNew
 							product={product}
 							setValue={setValue}
 						/>
-
-						<div className='space-y-2'>
-							<label
-								htmlFor='mainImage'
-								className='block text-sm font-medium'
-							>
-								Головне зображення
-							</label>
-							<input
-								id='mainImage'
-								type='file'
-								accept='image/*'
-								{...register('mainImage')}
-								className='w-full rounded-md border border-gray-500 bg-white px-5 py-3 text-sm'
-							/>
-							{product.mainImage && (
-								<div className='mt-2'>
-									<p className='text-sm text-gray-500'>Поточне зображення:</p>
-									<img
-										src={product.mainImage}
-										alt='Current main image'
-										className='w-32 h-32 object-cover mt-1'
-									/>
-								</div>
-							)}
-						</div>
-
-						<div className='space-y-2'>
-							<label
-								htmlFor='hoverImage'
-								className='block text-sm font-medium'
-							>
-								Зображення при наведенні
-							</label>
-							<input
-								id='hoverImage'
-								type='file'
-								accept='image/*'
-								{...register('hoverImage')}
-								className='w-full rounded-md border border-gray-500 bg-white px-5 py-3 text-sm'
-							/>
-							{product.hoverImage && (
-								<div className='mt-2'>
-									<p className='text-sm text-gray-500'>Поточне зображення:</p>
-									<img
-										src={product.hoverImage}
-										alt='Current hover image'
-										className='w-32 h-32 object-cover mt-1'
-									/>
-								</div>
-							)}
-						</div>
 
 						<AdminProductEditDescription
 							product={product}
