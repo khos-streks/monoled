@@ -28,6 +28,7 @@ export function ShopProduct({ product, index, showMode }: Props) {
 			className={cn('flex w-full flex-col group', {
 				'min-[500px]:gap-10 min-[500px]:flex-row': showMode === 'list'
 			})}
+			 prefetch={false}
 		>
 			<div
 				className={cn('relative w-full aspect-square', {
