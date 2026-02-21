@@ -2,8 +2,8 @@
 
 import { ProductWithItems } from '@/typing/interfaces'
 import cn from 'clsx'
-import Image from 'next/image'
 import Link from 'next/link'
+import { useState } from 'react'
 
 interface Props {
 	product: ProductWithItems
@@ -17,10 +17,11 @@ export function ShopProduct({ product, index, showMode }: Props) {
 	const defaultItem = product.items && product.items.length > 0 ? product.items[0] : null
 
 	const mainImage = defaultItem?.images?.[0] || '/placeholder-image.jpg'
-
 	const hoverImage = defaultItem?.images?.[1]
-
 	const isPriority = index < 4
+
+	const [src, setSrc] = useState(mainImage)
+	const [hoverSrc, setHoverSrc] = useState(hoverImage)
 
 	return (
 		<Link
@@ -28,7 +29,7 @@ export function ShopProduct({ product, index, showMode }: Props) {
 			className={cn('flex w-full flex-col group', {
 				'min-[500px]:gap-10 min-[500px]:flex-row': showMode === 'list'
 			})}
-			 prefetch={false}
+			prefetch={false}
 		>
 			<div
 				className={cn('relative w-full aspect-square', {
@@ -42,32 +43,31 @@ export function ShopProduct({ product, index, showMode }: Props) {
 				)}
 
 				{/* Main image */}
-				<Image
-					src={mainImage}
+				<img
+					src={src}
 					alt={product.name}
 					width={300}
 					height={300}
-					sizes={SIZES}
-					quality={75}
 					loading={isPriority ? 'eager' : 'lazy'}
-					priority={isPriority}
+					sizes={SIZES}
 					className={cn(
 						'object-cover rounded-lg w-full h-full transition-opacity duration-300',
-						hoverImage && 'group-hover:opacity-0'
+						hoverSrc && 'group-hover:opacity-0'
 					)}
+					onError={() => setSrc('/placeholder-image.jpg')}
 				/>
 
 				{/* Hover image */}
-				{hoverImage && (
-					<Image
-						src={hoverImage}
+				{hoverSrc && (
+					<img
+						src={hoverSrc}
 						alt={product.name}
 						width={300}
 						height={300}
-						sizes={SIZES}
-						quality={75}
 						loading='lazy'
+						sizes={SIZES}
 						className='object-cover rounded-lg w-full h-full absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none'
+						onError={() => setHoverSrc('/placeholder-image.jpg')}
 					/>
 				)}
 			</div>
@@ -79,9 +79,7 @@ export function ShopProduct({ product, index, showMode }: Props) {
 
 				<div
 					className='line-clamp-6 text-sm text-neutral-500 my-3 max-[500px]:text-xs'
-					dangerouslySetInnerHTML={{
-						__html: product.description
-					}}
+					dangerouslySetInnerHTML={{ __html: product.description }}
 				/>
 
 				{defaultItem && <p className='font-semibold text-lg'>{defaultItem.price} грн.</p>}
