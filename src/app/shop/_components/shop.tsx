@@ -57,6 +57,8 @@ export default function Shop({ allCategories, allProducts, texts }: Props) {
 									<article
 										key={product.id}
 										style={{
+											contentVisibility: 'auto',
+											containIntrinsicSize: 'auto 450px',
 											opacity: 0,
 											animation: 'opacity 0.6s ease-in-out forwards',
 											animationDelay: `${Math.min(index * 0.1, 1)}s`
