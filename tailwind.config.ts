@@ -15,9 +15,6 @@ export default {
       animation: {
         "opacity-1": "opacity 1s ease-in-out",
       },
-      screens: {
-        "hover-device": { raw: "(hover: hover)" },
-      },
     },
   },
   plugins: [],

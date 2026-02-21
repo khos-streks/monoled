@@ -61,6 +61,15 @@ body {
 	}
 }
 
+.hover-only {
+	display: none;
+}
+@media (hover: hover) {
+	.hover-only {
+		display: block;
+	}
+}
+
 @keyframes fadeSlideIn {
 	from {
 		opacity: 0;

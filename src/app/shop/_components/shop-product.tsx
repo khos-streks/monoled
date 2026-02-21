@@ -55,7 +55,7 @@ export function ShopProduct({ product, showMode, index }: Props) {
 						sizes={CATALOG_SIZES}
 						quality={60}
 						loading='lazy'
-						className='object-cover h-full w-full rounded-lg absolute top-0 left-0 hidden hover-device:block'
+						className='object-cover h-full w-full rounded-lg absolute top-0 left-0 hover-only'
 					/>
 				)}
 			</div>
