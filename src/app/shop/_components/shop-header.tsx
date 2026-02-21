@@ -5,7 +5,6 @@ import Select from 'react-select'
 import { LayoutGridIcon, ListIcon } from 'lucide-react'
 import cn from 'clsx'
 import dynamic from 'next/dynamic'
-import { motion } from 'framer-motion'
 import { useTexts } from '@/context/textContext'
 import { useRouter, useSearchParams } from 'next/navigation'
 import LimitSelector from './shop-limit-selector'
@@ -35,11 +34,9 @@ function ShopHeaderComponent({ currentShowMode }: Props) {
 	const nothingFound = texts?.find(text => text.slug === 'nothing-found')?.text
 
 	return (
-		<motion.header
-			className=' bg-white px-4 py-2 flex items-center gap-5 h-full max-lg:flex-col max-lg:py-5'
-			initial={{ opacity: 0 }}
-			animate={{ opacity: 1 }}
-			transition={{ duration: 0.3, bounce: 0, ease: 'easeInOut' }}
+		<header
+			className='bg-white px-4 py-2 flex items-center gap-5 h-full max-lg:flex-col max-lg:py-5'
+			style={{ opacity: 0, animation: 'opacity 0.3s ease-in-out forwards' }}
 		>
 			<Select
 				options={SORTING_METHODS.map(i => ({ value: i.id, label: i.name }))}
@@ -93,8 +90,9 @@ function ShopHeaderComponent({ currentShowMode }: Props) {
 					/>
 				</button>
 			</div>
-		</motion.header>
+		</header>
 	)
 }
 
+// ssr: false потрібен для react-select (уникає hydration mismatch)
 export const ShopHeader = dynamic(() => Promise.resolve(ShopHeaderComponent), { ssr: false })

@@ -3,7 +3,6 @@
 import { Category } from '@prisma/client'
 import Link from 'next/link'
 import { usePathname, useSearchParams } from 'next/navigation'
-import { motion } from 'framer-motion'
 import { useTexts } from '@/context/textContext'
 
 interface Props {
@@ -23,13 +22,13 @@ export function ShopSidebar({ allCategories }: Props) {
 			<ul className='flex flex-col gap-6 py-5 px-6 h-full'>
 				{allCategories ? (
 					<>
-						<motion.li
-							initial={{ opacity: 0, y: '100%' }}
-							animate={{ opacity: 1, y: '0' }}
-							transition={{ duration: 0.2, bounce: 0, ease: 'easeInOut' }}
+						<li
+							style={{
+								opacity: 0,
+								animation: 'fadeSlideIn 0.2s ease-in-out forwards'
+							}}
 						>
 							<Link
-								target='_top'
 								href='/shop'
 								className='py-2 text-xl'
 							>
@@ -38,25 +37,26 @@ export function ShopSidebar({ allCategories }: Props) {
 									'-'}{' '}
 								{allCategoriesText}
 							</Link>
-						</motion.li>
-						{allCategories.map(i => {
+						</li>
+						{allCategories.map((i, index) => {
 							const isCurrentSelected =
 								params.toString().includes(i.slug) && pathname.includes('shop')
 							return (
-								<motion.li
+								<li
 									key={i.slug}
-									initial={{ opacity: 0, y: '100%' }}
-									animate={{ opacity: 1, y: '0' }}
-									transition={{ duration: 0.2, bounce: 0, ease: 'easeInOut' }}
+									style={{
+										opacity: 0,
+										animation: 'fadeSlideIn 0.2s ease-in-out forwards',
+										animationDelay: `${(index + 1) * 0.03}s`
+									}}
 								>
 									<Link
-										target='_top'
 										className='py-2 text-xl'
 										href={`/shop?category=${i.slug}`}
 									>
 										{isCurrentSelected && '-'} {i.name}
 									</Link>
-								</motion.li>
+								</li>
 							)
 						})}
 					</>

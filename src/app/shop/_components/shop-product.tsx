@@ -1,6 +1,5 @@
 import { ProductWithItems } from '@/typing/interfaces'
 import cn from 'clsx'
-import dynamic from 'next/dynamic'
 import Image from 'next/image'
 import Link from 'next/link'
 
@@ -10,63 +9,61 @@ interface Props {
 	showMode: 'grid' | 'list'
 }
 
-export const ShopProduct = dynamic(() =>
-	Promise.resolve(({ product, showMode, index }: Props) => {
-		const defaultItem = product.items && product.items.length > 0 ? product.items[0] : null
-		const mainImage = defaultItem?.images?.[0] || '/placeholder-image.jpg'
-		const hoverImage = defaultItem?.images?.[1]
+export function ShopProduct({ product, showMode, index }: Props) {
+	const defaultItem = product.items && product.items.length > 0 ? product.items[0] : null
+	const mainImage = defaultItem?.images?.[0] || '/placeholder-image.jpg'
+	const hoverImage = defaultItem?.images?.[1]
 
-		return (
-			<Link
-				href={`/product/${product.slug}`}
-				className={cn('flex w-full flex-col group cursor-pointer', {
-					'min-[500px]:gap-10 min-[500px]:flex-row': showMode === 'list'
+	return (
+		<Link
+			href={`/product/${product.slug}`}
+			className={cn('flex w-full flex-col group cursor-pointer', {
+				'min-[500px]:gap-10 min-[500px]:flex-row': showMode === 'list'
+			})}
+		>
+			<div
+				className={cn('z-0 relative w-full aspect-square', {
+					'min-[500px]:h-[200px] 2xl:h-[250px] min-[500px]:w-auto': showMode === 'list'
 				})}
 			>
-				<div
-					className={cn('z-0 relative w-full aspect-square', {
-						'min-[500px]:h-[200px] 2xl:h-[250px] min-[500px]:w-auto': showMode === 'list'
+				{product.isNew && (
+					<div className='absolute top-0 right-3 bg-blue-500 text-white z-[11] rounded-b-md px-4 py-2'>
+						Новинка
+					</div>
+				)}
+				<Image
+					src={mainImage}
+					alt={product.name}
+					width={360}
+					height={360}
+					priority={index <= 6}
+					loading={index <= 6 ? 'eager' : 'lazy'}
+					className={cn('object-cover rounded-lg h-full w-full', {
+						'group-hover:opacity-0 transition-opacity duration-[400ms] absolute z-10': hoverImage
 					})}
-				>
-					{product.isNew && (
-						<div className='absolute top-0 right-3 bg-blue-500 text-white z-[11] rounded-b-md px-4 py-2'>
-							Новинка
-						</div>
-					)}
+				/>
+				{hoverImage && (
 					<Image
-						src={mainImage}
+						src={hoverImage}
 						alt={product.name}
 						width={360}
 						height={360}
-						priority={index <= 6}
-						loading={index <= 6 ? 'eager' : 'lazy'}
-						className={cn('object-cover rounded-lg h-full w-full', {
-							'group-hover:opacity-0 transition-opacity duration-[400ms] absolute z-10': hoverImage
-						})}
+						loading='lazy'
+						className='object-cover h-full w-full rounded-lg absolute top-0 left-0'
 					/>
-					{hoverImage && (
-						<Image
-							src={hoverImage}
-							alt={product.name}
-							width={360}
-							height={360}
-							loading='lazy'
-							className='object-cover h-full w-full rounded-lg absolute top-0 left-0'
-						/>
-					)}
-				</div>
+				)}
+			</div>
 
-				<div className='flex flex-col'>
-					<p className='mt-5 text-lg group-hover:underline underline-offset-4 transition-colors duration-200 max-[500px]:text-base'>
-						{product.name}
-					</p>
-					<div
-						className='line-clamp-6 text-sm text-neutral-500 my-3 max-[500px]:text-xs'
-						dangerouslySetInnerHTML={{ __html: product.description }}
-					/>
-					{defaultItem && <p className='font-semibold text-lg'>{defaultItem.price} грн.</p>}
-				</div>
-			</Link>
-		)
-	})
-)
+			<div className='flex flex-col'>
+				<p className='mt-5 text-lg group-hover:underline underline-offset-4 transition-colors duration-200 max-[500px]:text-base'>
+					{product.name}
+				</p>
+				<div
+					className='line-clamp-6 text-sm text-neutral-500 my-3 max-[500px]:text-xs'
+					dangerouslySetInnerHTML={{ __html: product.description }}
+				/>
+				{defaultItem && <p className='font-semibold text-lg'>{defaultItem.price} грн.</p>}
+			</div>
+		</Link>
+	)
+}

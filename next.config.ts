@@ -11,8 +11,7 @@ const nextConfig: NextConfig = {
 				hostname: 'storage.lumineka.com.ua',
 				pathname: '/**'
 			}
-		],
-		unoptimized: true
+		]
 	}
 }
 

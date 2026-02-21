@@ -4,7 +4,6 @@ import { ProductWithItems } from '@/typing/interfaces'
 import { filterProducts } from '@/utils/filterProducts'
 import { Category, TextField } from '@prisma/client'
 import cn from 'clsx'
-import { motion } from 'framer-motion'
 import { useSearchParams } from 'next/navigation'
 import { useMemo } from 'react'
 import { ShopHeader } from './shop-header'
@@ -19,9 +18,6 @@ interface Props {
 	texts: TextField[] | undefined
 }
 
-// Клієнтський компонент: дані приходять з сервера один раз,
-// вся фільтрація/сортування/пагінація — через useMemo на клієнті.
-// Це усуває повторні серверні запити при зміні searchParams.
 export default function Shop({ allCategories, allProducts, texts }: Props) {
 	const searchParams = useSearchParams()
 
@@ -58,15 +54,12 @@ export default function Shop({ allCategories, allProducts, texts }: Props) {
 								})}
 							>
 								{filteredProducts.map((product, index) => (
-									<motion.article
+									<article
 										key={product.id}
-										initial={{ opacity: 0 }}
-										animate={{ opacity: 1 }}
-										transition={{
-											duration: 0.6,
-											bounce: 0,
-											ease: 'easeInOut',
-											delay: (index ?? 1) * 0.2
+										style={{
+											opacity: 0,
+											animation: 'opacity 0.6s ease-in-out forwards',
+											animationDelay: `${Math.min(index * 0.1, 1)}s`
 										}}
 									>
 										<ShopProduct
@@ -74,7 +67,7 @@ export default function Shop({ allCategories, allProducts, texts }: Props) {
 											showMode={currentShowMode}
 											product={product}
 										/>
-									</motion.article>
+									</article>
 								))}
 							</div>
 						) : (
