@@ -9,6 +9,8 @@ interface Props {
 	showMode: 'grid' | 'list'
 }
 
+const CATALOG_SIZES = '(max-width: 768px) 45vw, (max-width: 1024px) 30vw, 25vw'
+
 export function ShopProduct({ product, showMode, index }: Props) {
 	const defaultItem = product.items && product.items.length > 0 ? product.items[0] : null
 	const mainImage = defaultItem?.images?.[0] || '/placeholder-image.jpg'
@@ -36,8 +38,10 @@ export function ShopProduct({ product, showMode, index }: Props) {
 					alt={product.name}
 					width={360}
 					height={360}
-					priority={index <= 6}
-					loading={index <= 6 ? 'eager' : 'lazy'}
+					sizes={CATALOG_SIZES}
+					quality={60}
+					priority={index <= 2}
+					loading={index <= 2 ? 'eager' : 'lazy'}
 					className={cn('object-cover rounded-lg h-full w-full', {
 						'group-hover:opacity-0 transition-opacity duration-[400ms] absolute z-10': hoverImage
 					})}
@@ -48,8 +52,10 @@ export function ShopProduct({ product, showMode, index }: Props) {
 						alt={product.name}
 						width={360}
 						height={360}
+						sizes={CATALOG_SIZES}
+						quality={60}
 						loading='lazy'
-						className='object-cover h-full w-full rounded-lg absolute top-0 left-0'
+						className='object-cover h-full w-full rounded-lg absolute top-0 left-0 hidden hover-device:block'
 					/>
 				)}
 			</div>
