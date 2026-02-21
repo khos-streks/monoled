@@ -54,16 +54,17 @@ export default function Shop({ allCategories, allProducts, texts }: Props) {
 								})}
 							>
 								{filteredProducts.map((product, index) => (
-									<article
-										key={product.id}
-										style={{
-											contentVisibility: 'auto',
-											containIntrinsicSize: 'auto 450px',
-											opacity: 0,
-											animation: 'opacity 0.6s ease-in-out forwards',
-											animationDelay: `${Math.min(index * 0.1, 1)}s`
-										}}
-									>
+								<article
+									key={product.id}
+									style={{
+										contentVisibility: 'auto',
+										containIntrinsicSize: 'auto 350px',
+										contain: 'layout style paint',
+										opacity: 0,
+										animation: 'opacity 0.5s ease-in-out forwards',
+										animationDelay: `${Math.min(index * 0.07, 0.6)}s`
+									}}
+								>
 										<ShopProduct
 											index={index}
 											showMode={currentShowMode}

@@ -1,7 +1,10 @@
+'use client'
+
 import { ProductWithItems } from '@/typing/interfaces'
 import cn from 'clsx'
 import Image from 'next/image'
 import Link from 'next/link'
+import { useEffect, useState } from 'react'
 
 interface Props {
 	product: ProductWithItems
@@ -10,11 +13,20 @@ interface Props {
 }
 
 const CATALOG_SIZES = '(max-width: 768px) 45vw, (max-width: 1024px) 30vw, 25vw'
+const BLUR_DATA_URL =
+	'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzYwIiBoZWlnaHQ9IjM2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZTVlN2ViIi8+PC9zdmc+'
 
 export function ShopProduct({ product, showMode, index }: Props) {
 	const defaultItem = product.items && product.items.length > 0 ? product.items[0] : null
 	const mainImage = defaultItem?.images?.[0] || '/placeholder-image.jpg'
 	const hoverImage = defaultItem?.images?.[1]
+
+	const isAboveFold = index < 4
+	const [isMobile, setIsMobile] = useState(false)
+
+	useEffect(() => {
+		setIsMobile(window.matchMedia('(hover: none)').matches)
+	}, [])
 
 	return (
 		<Link
@@ -40,11 +52,16 @@ export function ShopProduct({ product, showMode, index }: Props) {
 					height={360}
 					sizes={CATALOG_SIZES}
 					quality={60}
+					loading={isAboveFold ? 'eager' : 'lazy'}
+					priority={isAboveFold}
+					placeholder='blur'
+					blurDataURL={BLUR_DATA_URL}
 					className={cn('object-cover rounded-lg h-full w-full', {
-						'group-hover:opacity-0 transition-opacity duration-[400ms] absolute z-10': hoverImage
+						'group-hover:opacity-0 transition-opacity duration-[400ms] absolute z-10':
+							hoverImage && !isMobile
 					})}
 				/>
-				{hoverImage && (
+				{hoverImage && !isMobile && (
 					<Image
 						src={hoverImage}
 						alt={product.name}
@@ -52,6 +69,9 @@ export function ShopProduct({ product, showMode, index }: Props) {
 						height={360}
 						sizes={CATALOG_SIZES}
 						quality={60}
+						loading='lazy'
+						placeholder='blur'
+						blurDataURL={BLUR_DATA_URL}
 						className='object-cover h-full w-full rounded-lg absolute top-0 left-0 hover-only'
 					/>
 				)}
