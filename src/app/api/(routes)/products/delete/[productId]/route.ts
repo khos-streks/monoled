@@ -23,23 +23,6 @@ export async function DELETE(
 
 		if (!product) throw new ApiError('Product not found', 404)
 
-		// Delete product images
-		if (product.mainImage) {
-			try {
-				await deleteFile(product.mainImage, req)
-			} catch (error) {
-				console.warn('Failed to delete main image:', error)
-			}
-		}
-
-		if (product.hoverImage) {
-			try {
-				await deleteFile(product.hoverImage, req)
-			} catch (error) {
-				console.warn('Failed to delete hover image:', error)
-			}
-		}
-
 		// Delete all product items and their associated images
 		for (const item of product.items) {
 			// Delete item images

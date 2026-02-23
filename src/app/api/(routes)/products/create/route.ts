@@ -12,24 +12,13 @@ const productSchema = Joi.object({
 		'string.empty': 'Name is required',
 		'any.required': 'Name is required'
 	}),
-	description: Joi.string().min(1).required().messages({
-		'string.empty': 'Description is required',
-		'any.required': 'Description is required'
-	}),
+	description: Joi.string().optional(),
 	categorySlug: Joi.string().min(1).required().messages({
 		'string.empty': 'Category slug is required',
 		'any.required': 'Category slug is required'
 	}),
 	modelUrl: Joi.string().optional(),
 	isNew: Joi.boolean().optional(),
-	mainImage: Joi.string().required().messages({
-		'string.empty': 'Main image is required',
-		'any.required': 'Main image is required'
-	}),
-	hoverImage: Joi.string().required().messages({
-		'string.empty': 'Hover image is required',
-		'any.required': 'Hover image is required'
-	}),
 	info: Joi.array()
 		.items(
 			Joi.object({
@@ -75,14 +64,6 @@ export async function POST(req: NextRequest) {
 		const isAdmin = await checkIsAdmin(req)
 		if (!isAdmin) throw new ApiError('You are not admin', 403)
 
-		// Save images
-		if (!mainImage || !hoverImage) {
-			throw new ApiError('Both main and hover images are required', 400)
-		}
-
-		const savedMainImage = await saveFile(mainImage, req)
-		const savedHoverImage = await saveFile(hoverImage, req)
-
 		// Create product without info
 		const product = await prisma.product.create({
 			data: {
@@ -91,9 +72,7 @@ export async function POST(req: NextRequest) {
 				description: value.description,
 				categorySlug: value.categorySlug,
 				isNew: value.isNew,
-				modelUrl: value.modelUrl,
-				mainImage: savedMainImage,
-				hoverImage: savedHoverImage
+				modelUrl: value.modelUrl
 			}
 		})
 

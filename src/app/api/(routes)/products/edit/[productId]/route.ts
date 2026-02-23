@@ -14,8 +14,6 @@ const productSchema = Joi.object({
 	categorySlug: Joi.string().optional(),
 	modelUrl: Joi.string().optional(),
 	isNew: Joi.boolean().optional(),
-	mainImage: Joi.string().optional(),
-	hoverImage: Joi.string().optional(),
 	info: Joi.array()
 		.items(
 			Joi.object({
@@ -46,8 +44,6 @@ export async function PUT(
 		const formData = await req.formData()
 		const body = Object.fromEntries(formData)
 		const productData = JSON.parse(body.productData as string)
-		const mainImage = formData.get('mainImage') as File | null
-		const hoverImage = formData.get('hoverImage') as File | null
 
 		const isAdmin = await checkIsAdmin(req)
 		if (!isAdmin) throw new ApiError('You are not admin', 403)
@@ -73,43 +69,9 @@ export async function PUT(
 			throw new ApiError('Product not found', 404)
 		}
 
-		// Handle image updates
-		if (mainImage) {
-			// Delete old main image if exists
-			if (existingProduct.mainImage) {
-				try {
-					await deleteFile(existingProduct.mainImage, req)
-				} catch (error) {
-					console.warn('Failed to delete old main image:', error)
-				}
-			}
-			// Save new main image
-			value.mainImage = await saveFile(mainImage, req)
-		}
-
-		if (hoverImage) {
-			// Delete old hover image if exists
-			if (existingProduct.hoverImage) {
-				try {
-					await deleteFile(existingProduct.hoverImage, req)
-				} catch (error) {
-					console.warn('Failed to delete old hover image:', error)
-				}
-			}
-			// Save new hover image
-			value.hoverImage = await saveFile(hoverImage, req)
-		}
-
 		// Extract info data
 		const infoData = value.info
 		delete value.info
-
-		// Update product
-		const updateData = {
-			...value,
-			mainImage: value.mainImage || undefined,
-			hoverImage: value.hoverImage || undefined
-		}
 
 		await prisma.product.update({
 			where: { id: Number(productId) },
