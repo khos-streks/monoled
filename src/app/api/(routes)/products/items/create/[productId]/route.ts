@@ -69,6 +69,7 @@ export async function POST(
 			if (file && file.type?.startsWith('image/')) {
 				const savedPath = await saveFile(file, req)
 				savedImages.push(savedPath)
+				console.log(`Saved file: ${savedPath}`)
 			} else {
 				throw new ApiError('Each image must be of type image/*', 400)
 			}
